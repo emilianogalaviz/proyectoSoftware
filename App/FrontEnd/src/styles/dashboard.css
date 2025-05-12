@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.dashboard-container {
+  display: flex;
+  width: 1000px;
+  height: 600px;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 0 45px rgba(0, 0, 0, 0.3);
+  background-color: white;
+}
+
+/* Panel izquierdo azul */
+.dashboard-left {
+  flex: 1;
+  background: linear-gradient(to bottom right, #0021A6 60%, #001a88 80%, #000c3ce5 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-top-right-radius: 220px;
+  border-bottom-right-radius: 220px;
+}
+
+.dashboard-left img.profile-picture {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  margin-bottom: 25px;
+}
+
+.dashboard-left h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.dashboard-left p {
+  font-size: 14px;
+  max-width: 200px;
+  text-align: center;
+}
+
+/* Panel derecho blanco */
+.dashboard-right {
+  flex: 1;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dashboard-right h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 30px;
+  color: #000;
+}
+
+.dashboard-right .section-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.dashboard-right .info-group {
+  margin-bottom: 20px;
+}
+
+.dashboard-right .info-group p {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.dashboard-right .info-group p b {
+  font-weight: 600;
+}
+
+/* Toggle y botón */
+.dashboard-right .toggle-section {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-right .change-password-btn {
+  margin-top: 30px;
+  background-color: #0021A6;
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 30px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dashboard-right .change-password-btn:hover {
+  background-color: #001b87;
+}
+
+/* Botón de regreso */
+.dashboard-left .back-btn {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  border: 2px solid white;
+  border-radius: 10px;
+  background: transparent;
+  color: white;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/*NUEVOS ESTILOS*/
+.profile-upload-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.upload-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #0021A6;
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border: 2px solid white;
+}
+
+
+/*EDITAR PERSONAL INFORMATION*/
+
+.edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.edit-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.dashboard-right input {
+  padding: 4px 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+
+/*EDITAR PASWORD*/
+.password-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.password-form input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.save-password-btn {
+  background-color: #0021A6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.save-password-btn:hover {
+  background-color: #001b87;
+}
+

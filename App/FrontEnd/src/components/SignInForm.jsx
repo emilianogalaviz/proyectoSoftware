@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { loginUser } from '/Users/emilianogalaviz/Desktop/ingSoftware/gitSoftware/proyectoSoftware/App/BackEnd/api.js';
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Inicializar useNavigate
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,6 +20,7 @@ export default function SignInForm() {
     try {
       const response = await loginUser(formData.email, formData.password);
       setMessage(response.message);
+      navigate('/dashboard'); // Redirigir al Dashboard.jsx
     } catch (err) {
       setError(err.error || 'Error al iniciar sesión.');
     }
