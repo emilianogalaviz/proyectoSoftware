@@ -2,6 +2,7 @@ import "../styles/dashboard.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserData, updateUserInfo } from "/Users/emilianogalaviz/Desktop/ingSoftware/gitSoftware/proyectoSoftware/App/BackEnd/api.js"; // Importar funciones de la API
+import { changePassword } from "/Users/emilianogalaviz/Desktop/ingSoftware/gitSoftware/proyectoSoftware/App/BackEnd/api.js";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function Dashboard() {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -51,16 +53,25 @@ export default function Dashboard() {
     }
   };
 
-  const handlePasswordSubmit = (e) => {
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    alert("Password updated successfully!");
-    setNewPassword("");
-    setConfirmPassword("");
-    setShowPasswordForm(false);
+  
+    try {
+      const emailFromStorage = localStorage.getItem("userEmail");
+      await changePassword(emailFromStorage, currentPassword, newPassword);
+      alert("Password updated successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowPasswordForm(false);
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert(error.error || "Error al cambiar la contraseña.");
+    }
   };
 
   const handleBackClick = () => {
@@ -148,8 +159,15 @@ export default function Dashboard() {
               {showPasswordForm ? "❌" : "✏️"}
             </button>
           </div>
-          {showPasswordForm && (
+              {showPasswordForm && (
             <form onSubmit={handlePasswordSubmit}>
+              <input
+                type="password"
+                placeholder="Current Password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+              />
               <input
                 type="password"
                 placeholder="New Password"

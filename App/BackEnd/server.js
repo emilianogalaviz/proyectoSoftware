@@ -135,6 +135,52 @@ app.put('/user/update', (req, res) => {
   });
 });
 
+
+// Ruta para cambiar la contraseña del usuario
+app.put('/user/change-password', async (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
+
+  if (!email || !currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Email, current password, and new password are required.' });
+  }
+
+  // Buscar al usuario por email
+  const query = 'SELECT password_hash FROM users WHERE email = ?';
+  db.query(query, [email], async (err, results) => {
+    if (err) {
+      console.error('Database query error:', err);
+      return res.status(500).json({ error: 'Database error.' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const user = results[0];
+
+    // Verificar la contraseña actual
+    const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Current password is incorrect.' });
+    }
+
+    // Hashear la nueva contraseña
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Actualizar la contraseña en la base de datos
+    const updateQuery = 'UPDATE users SET password_hash = ? WHERE email = ?';
+    db.query(updateQuery, [hashedPassword, email], (err, result) => {
+      if (err) {
+        console.error('Database update error:', err);
+        return res.status(500).json({ error: 'Database error.' });
+      }
+
+      res.status(200).json({ message: 'Password updated successfully.' });
+    });
+  });
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

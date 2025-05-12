@@ -52,3 +52,17 @@ export const updateUserInfo = async (email, username, phone_number) => {
     throw error.response?.data || { error: 'Error al actualizar la información del usuario.' };
   }
 };
+
+
+export const changePassword = async (email, currentPassword, newPassword) => {
+  try {
+    const response = await axios.put(`${API_URL}/user/change-password`, {
+      email,
+      currentPassword,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: 'Error al cambiar la contraseña.' };
+  }
+};
