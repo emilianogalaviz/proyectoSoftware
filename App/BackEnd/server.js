@@ -86,6 +86,55 @@ app.post('/login', (req, res) => {
   });
 });
 
+// Ruta para obtener los datos del usuario
+// Ruta para obtener los datos del usuario
+app.get('/user', (req, res) => {
+  const { email } = req.query;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required.' });
+  }
+
+  const query = 'SELECT username, email, phone_number FROM users WHERE email = ?';
+  db.query(query, [email], (err, results) => {
+    if (err) {
+      console.error('Database query error:', err); // Log del error
+      return res.status(500).json({ error: 'Database error.' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const user = results[0];
+    res.status(200).json(user);
+  });
+});
+
+// Ruta para actualizar el número de teléfono del usuario
+
+app.put('/user/update', (req, res) => {
+  const { email, username, phone_number } = req.body;
+
+  if (!email || !username || !phone_number) {
+    return res.status(400).json({ error: 'Email, username, and phone number are required.' });
+  }
+
+  const query = 'UPDATE users SET username = ?, phone_number = ? WHERE email = ?';
+  db.query(query, [username, phone_number, email], (err, result) => {
+    if (err) {
+      console.error('Database query error:', err);
+      return res.status(500).json({ error: 'Database error.' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json({ message: 'User information updated successfully.' });
+  });
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

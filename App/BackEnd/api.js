@@ -31,3 +31,24 @@ export const generatePassword = async (length = 12) => {
     throw error.response?.data || { error: 'Error al generar contraseña.' };
   }
 };
+
+// Obtener datos del usuario
+export const getUserData = async (email) => {
+  try {
+    const response = await axios.get(`${API_URL}/user`, { params: { email } });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: 'Error al obtener datos del usuario.' };
+  }
+};
+
+// Actualizar el número de teléfono del usuario
+
+export const updateUserInfo = async (email, username, phone_number) => {
+  try {
+    const response = await axios.put(`${API_URL}/user/update`, { email, username, phone_number });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: 'Error al actualizar la información del usuario.' };
+  }
+};

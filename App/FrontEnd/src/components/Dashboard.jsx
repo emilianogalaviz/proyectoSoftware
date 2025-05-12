@@ -1,95 +1,121 @@
 import "../styles/dashboard.css";
-
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getUserData, updateUserInfo } from "/Users/emilianogalaviz/Desktop/ingSoftware/gitSoftware/proyectoSoftware/App/BackEnd/api.js"; // Importar funciones de la API
 
 export default function Dashboard() {
-  const navigate = useNavigate(); // Inicializar useNavigate
+  const navigate = useNavigate();
 
   const [profileImage, setProfileImage] = useState(
     localStorage.getItem("profileImage") || "https://via.placeholder.com/140x140.png?text=profile"
   );
-
-  
-
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("Santiago Aguas");
-  const [email, setEmail] = useState("santiago.ad@gmail.com");
-  const [phone, setPhone] = useState("3315209002");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result;
-        setProfileImage(base64);
-        localStorage.setItem("profileImage", base64);
-      };
-      reader.readAsDataURL(file);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const emailFromStorage = localStorage.getItem("userEmail"); // Obtener el email del usuario (almacenado tras login)
+        if (!emailFromStorage) {
+          navigate("/"); // Redirigir si no hay email
+          return;
+        }
+
+        const userData = await getUserData(emailFromStorage);
+        setName(userData.username);
+        setEmail(userData.email);
+        setPhone(userData.phone_number);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        alert("Error al cargar los datos del usuario.");
+        navigate("/"); // Redirigir al inicio en caso de error
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
+  const handleUserInfoUpdate = async () => {
+    try {
+      await updateUserInfo(email, name, phone);
+      alert("User information updated successfully!");
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating user information:", error);
+      alert(error.error || "Error al actualizar la información del usuario.");
     }
   };
 
-  const toggleEdit = () => setIsEditing((prev) => !prev);
-  const togglePasswordForm = () => setShowPasswordForm(!showPasswordForm);
-
-  const handlePasswordChange = (e) => {
+  const handlePasswordSubmit = (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
+      alert("Passwords do not match!");
       return;
     }
-    alert("Password changed successfully!");
-    setCurrentPassword("");
+    alert("Password updated successfully!");
     setNewPassword("");
     setConfirmPassword("");
-    setShowPasswordForm(false); // Cierra el formulario
+    setShowPasswordForm(false);
   };
 
   const handleBackClick = () => {
-    navigate("/"); // Redirigir al inicio
+    navigate("/");
   };
 
   return (
     <div className="dashboard-container">
-      {/* Panel azul izquierdo */}
+      {/* Panel izquierdo */}
       <div className="dashboard-left">
         <button className="back-btn" onClick={handleBackClick}>←</button>
-
         <label htmlFor="profile-upload" className="profile-upload-wrapper">
-          <img
-            src={profileImage}
-            alt="Profile"
-            className="profile-picture"
-          />
+          <img src={profileImage} alt="Profile" className="profile-picture" />
           <div className="upload-overlay">📷</div>
         </label>
         <input
           id="profile-upload"
           type="file"
           accept="image/*"
-          onChange={handleImageChange}
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const base64 = reader.result;
+                setProfileImage(base64);
+                localStorage.setItem("profileImage", base64);
+              };
+              reader.readAsDataURL(file);
+            }
+          }}
           style={{ display: "none" }}
         />
-
-        <h1>Hi, Santiago</h1>
+        <h1>Hi, {name || "User"}</h1>
         <p>Your personal space, your rules!</p>
       </div>
 
       {/* Panel derecho */}
       <div className="dashboard-right">
         <h2>Your Dashboard</h2>
-
         <div className="info-group">
           <div className="edit-header">
             <p className="section-title">Personal Information:</p>
-            <button className="edit-btn" onClick={toggleEdit}>{isEditing ? "💾" : "✏️"}</button>
+            <button
+              className="edit-btn"
+              onClick={() => {
+                if (isEditing) {
+                  handleUserInfoUpdate(); // Llamar a la función para actualizar los datos del usuario
+                }
+                setIsEditing(!isEditing);
+              }}
+            >
+              {isEditing ? "💾" : "✏️"}
+            </button>
           </div>
-
           <p>
             <b>Name:</b>{" "}
             {isEditing ? (
@@ -98,16 +124,10 @@ export default function Dashboard() {
               name || <i>sin info</i>
             )}
           </p>
-
           <p>
             <b>Email:</b>{" "}
-            {isEditing ? (
-              <input value={email} onChange={(e) => setEmail(e.target.value)} />
-            ) : (
-              email || <i>sin info</i>
-            )}
+            {email || <i>sin info</i>} {/* El correo no se puede editar */}
           </p>
-
           <p>
             <b>Phone Number:</b>{" "}
             {isEditing ? (
@@ -116,48 +136,40 @@ export default function Dashboard() {
               phone || <i>sin info</i>
             )}
           </p>
-
-          <p><b>Member Since:</b> 17/03/25</p>
         </div>
 
-        <div className="info-group">
-          <p className="section-title">Security & Settings:</p>
-          <div className="toggle-section">
-            <label>Disable Face ID</label>
-            <input type="checkbox" />
-          </div>
-        </div>
-
-        <button className="change-password-btn" onClick={togglePasswordForm}>CHANGE PASSWORD</button>
-
-        {showPasswordForm && (
-          <form className="password-form" onSubmit={handlePasswordChange}>
-            <input
-              type="password"
-              placeholder="Current Password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Confirm New Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-            <button type="submit" className="save-password-btn">
-              Save
+        <div className="password-group">
+          <div className="edit-header">
+            <p className="section-title">Password:</p>
+            <button
+              className="edit-btn"
+              onClick={() => setShowPasswordForm(!showPasswordForm)}
+            >
+              {showPasswordForm ? "❌" : "✏️"}
             </button>
-          </form>
-        )}
+          </div>
+          {showPasswordForm && (
+            <form onSubmit={handlePasswordSubmit}>
+              <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <button type="submit" className="save-password-btn">
+                Save
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
